@@ -1,3 +1,5 @@
+from pygame.event import Event
+
 
 class StateMachine(object):
     def __init__(self):
@@ -31,7 +33,7 @@ class StateMachine(object):
         self.state.previous = previous
         print(f"{self.state.previous} -> {self.state_name}")
 
-    def get_event(self, event):
+    def get_event(self, event: Event):
         self.state.get_event(event)
 
 

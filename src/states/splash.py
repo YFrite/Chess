@@ -7,7 +7,7 @@ class Splash(_State):
     def __init__(self):
         super().__init__()
         self.next = "MENU"
-        self.timeout = 5
+        self.timeout = 1
         self.alpha = 150
         self.alpha_speed = 0
 

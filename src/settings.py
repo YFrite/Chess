@@ -1,12 +1,11 @@
 import os.path
-import sys
 
 import pygame as pg
 
 from src.files import graphics_from_dir
 
 pg.init()
-SCREEN_SIZE = (1200, 700)
+SCREEN_SIZE: tuple[int, int] = (1200, 700)
 BACKGROUND_COLOR = (255, 255, 255)
 SCREEN_RECT = pg.Rect((0, 0), SCREEN_SIZE)
 _screen = pg.display.set_mode(SCREEN_SIZE)
