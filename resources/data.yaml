@@ -1,1 +1,5 @@
-!!python/tuple
+gray: !!python/tuple [128, 128, 128]
+light_gray: !!python/tuple [211, 211, 211]
+gold: !!python/tuple [255, 215, 0]
+black: !!python/tuple [0, 0, 0]
+white: !!python/tuple [255, 255, 255]

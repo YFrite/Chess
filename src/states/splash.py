@@ -1,4 +1,4 @@
-from src.settings import BACKGROUND_COLOR, GFX, SCREEN_RECT, font_xizor
+from src.settings import BACKGROUND_COLOR, RESOURCES, SCREEN_RECT
 from src.state_machine import _State
 import pygame as pg
 
@@ -10,8 +10,8 @@ class Splash(_State):
         self.timeout = 1
         self.alpha = 150
         self.alpha_speed = 0
-
-        self.image = GFX["misc"]['splash'].copy().convert()
+        print(RESOURCES)
+        self.image = RESOURCES["misc"]['splash'].copy().convert()
         self.image.set_alpha(self.alpha)
         self.rect = self.image.get_rect(center=SCREEN_RECT.center)
 

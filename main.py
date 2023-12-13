@@ -1,5 +1,3 @@
-import pygame
-
 from src.controller import Controller
 from src.settings import CAPTURE
 from src.states.game import Game

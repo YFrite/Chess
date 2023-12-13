@@ -4,7 +4,7 @@ import pygame as pg
 from pygame import Surface
 from pygame.event import Event
 
-from src.settings import SCREEN_SIZE, BACKGROUND_COLOR, GFX
+from src.settings import SCREEN_SIZE, BACKGROUND_COLOR, RESOURCES
 from src.state_machine import _State
 
 from src.views.button import Button
@@ -20,12 +20,12 @@ class Menu(_State):
         self.mouse_position = pg.mouse.get_pos()
 
         self.buttons = [Button(position=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2 - 100),
-                               image=GFX["misc"]["play_button"],
-                               image_hovered=GFX["misc"]["play_button_hovered"],
+                               image=RESOURCES["misc"]["play_button"],
+                               image_hovered=RESOURCES["misc"]["play_button_hovered"],
                                next_state="GAME"),
                         Button(position=(SCREEN_SIZE[0] // 2, SCREEN_SIZE[1] // 2 + 50),
-                               image=GFX["misc"]["quit_button"],
-                               image_hovered=GFX["misc"]["quit_button_hovered"],
+                               image=RESOURCES["misc"]["quit_button"],
+                               image_hovered=RESOURCES["misc"]["quit_button_hovered"],
                                next_state="EXIT"),
                         ]
 
