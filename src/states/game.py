@@ -64,9 +64,10 @@ class Game(_State):
                                   100, 100], 2)
 
     def draw_game_over(self, surface):
-        pg.draw.rect(surface, 'black', [200, 200, 400, 70])
+        pg.draw.rect(surface, 'black', [200, 200, 600, 100])
         surface.blit(RESOURCES["fonts"]["oswald"].render(f'{self.winner} победили!', True, 'white'), (210, 210))
-        surface.blit(RESOURCES["fonts"]["oswald"].render(f'Нажмите ENTER, чтобы начать сначала!', True, 'white'), (210, 240))
+        surface.blit(RESOURCES["fonts"]["oswald"].render(f'Нажмите ENTER, чтобы начать сначала!', True, 'white'),
+                     (210, 240))
 
     def check_options(self, pieces, locations, turn):
         moves_list = []
@@ -258,8 +259,10 @@ class Game(_State):
                     if king_location in self.black_options[i]:
                         if self.counter < 15:
                             pg.draw.rect(surface, COLORS["hazard"], [self.white_locations[king_index][0] * 100 + 1,
-                                                              self.white_locations[king_index][1] * 100 + 1, 100, 100],
+                                                                     self.white_locations[king_index][1] * 100 + 1, 100,
+                                                                     100],
                                          5)
+                            self.winner = "Черные"
         else:
             if 'king' in self.black_pieces:
                 king_index = self.black_pieces.index('king')
@@ -268,9 +271,10 @@ class Game(_State):
                     if king_location in self.white_options[i]:
                         if self.counter < 15:
                             pg.draw.rect(surface, COLORS["hazard"], [self.black_locations[king_index][0] * 100 + 1,
-                                                                self.black_locations[king_index][1] * 100 + 1, 100,
-                                                                100],
+                                                                     self.black_locations[king_index][1] * 100 + 1, 100,
+                                                                     100],
                                          5)
+                            self.winner = "Белые"
 
     def draw_board(self, surface):
         for i in range(32, 68):
