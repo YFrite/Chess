@@ -39,13 +39,13 @@ class Game(_State):
             index = self.piece_list.index(self.white_pieces[i])
             if self.white_pieces[i] == 'pawn':
                 surface.blit(RESOURCES["figures"]["white_pawn"],
-                             (self.white_locations[i][0] * 100 + 22, self.white_locations[i][1] * 100 + 30))
+                             (self.white_locations[i][0] * 100 + 10, self.white_locations[i][1] * 100 + 10))
             else:
                 surface.blit(RESOURCES["figures"][self.white_images[index]],
                              (self.white_locations[i][0] * 100 + 10, self.white_locations[i][1] * 100 + 10))
             if self.turn < 2:
                 if self.selection == i:
-                    pg.draw.rect(surface, 'red',
+                    pg.draw.rect(surface, COLORS["choice"],
                                  [self.white_locations[i][0] * 100 + 1, self.white_locations[i][1] * 100 + 1,
                                   100, 100], 2)
 
@@ -53,20 +53,20 @@ class Game(_State):
             index = self.piece_list.index(self.black_pieces[i])
             if self.black_pieces[i] == 'pawn':
                 surface.blit(RESOURCES["figures"]["black_pawn"],
-                             (self.black_locations[i][0] * 100 + 22, self.black_locations[i][1] * 100 + 30))
+                             (self.black_locations[i][0] * 100 + 10, self.black_locations[i][1] * 100 + 10))
             else:
                 surface.blit(RESOURCES["figures"][self.black_images[index]],
                              (self.black_locations[i][0] * 100 + 10, self.black_locations[i][1] * 100 + 10))
             if self.turn >= 2:
                 if self.selection == i:
-                    pg.draw.rect(surface, 'blue',
+                    pg.draw.rect(surface, COLORS["choice"],
                                  [self.black_locations[i][0] * 100 + 1, self.black_locations[i][1] * 100 + 1,
                                   100, 100], 2)
 
     def draw_game_over(self, surface):
         pg.draw.rect(surface, 'black', [200, 200, 400, 70])
-        surface.blit(RESOURCES["fonts"]["oswald"].render(f'{self.winner} won the game!', True, 'white'), (210, 210))
-        surface.blit(RESOURCES["fonts"]["oswald"].render(f'Press ENTER to Restart!', True, 'white'), (210, 240))
+        surface.blit(RESOURCES["fonts"]["oswald"].render(f'{self.winner} победили!', True, 'white'), (210, 210))
+        surface.blit(RESOURCES["fonts"]["oswald"].render(f'Нажмите ENTER, чтобы начать сначала!', True, 'white'), (210, 240))
 
     def check_options(self, pieces, locations, turn):
         moves_list = []
@@ -228,13 +228,14 @@ class Game(_State):
         else:
             options_list = self.black_options
         valid_options = options_list[self.selection]
+
         return valid_options
 
     def draw_valid(self, moves, surface):
         if self.turn < 2:
-            color = 'red'
+            color = COLORS["choice"]
         else:
-            color = 'blue'
+            color = COLORS["choice"]
         for i in range(len(moves)):
             pg.draw.circle(surface, color, (moves[i][0] * 100 + 50, moves[i][1] * 100 + 50), 5)
 
@@ -256,8 +257,8 @@ class Game(_State):
                 for i in range(len(self.black_options)):
                     if king_location in self.black_options[i]:
                         if self.counter < 15:
-                            pg.draw.rect(surface, 'dark red', [self.white_locations[king_index][0] * 100 + 1,
-                                                               self.white_locations[king_index][1] * 100 + 1, 100, 100],
+                            pg.draw.rect(surface, COLORS["hazard"], [self.white_locations[king_index][0] * 100 + 1,
+                                                              self.white_locations[king_index][1] * 100 + 1, 100, 100],
                                          5)
         else:
             if 'king' in self.black_pieces:
@@ -266,27 +267,36 @@ class Game(_State):
                 for i in range(len(self.white_options)):
                     if king_location in self.white_options[i]:
                         if self.counter < 15:
-                            pg.draw.rect(surface, 'dark blue', [self.black_locations[king_index][0] * 100 + 1,
+                            pg.draw.rect(surface, COLORS["hazard"], [self.black_locations[king_index][0] * 100 + 1,
                                                                 self.black_locations[king_index][1] * 100 + 1, 100,
                                                                 100],
                                          5)
 
     def draw_board(self, surface):
+        for i in range(32, 68):
+            column = i % 4
+            row = i // 4
+            if row % 2 == 0:
+                pg.draw.rect(surface, COLORS["tile_1"], [600 - (column * 200), row * 100 - 900, 100, 100])
+            else:
+                pg.draw.rect(surface, COLORS["tile_1"], [700 - (column * 200), row * 100 - 900, 100, 100])
+
         for i in range(32):
             column = i % 4
             row = i // 4
             if row % 2 == 0:
-                pg.draw.rect(surface, COLORS["tile_1"], [600 - (column * 200), row * 100, 100, 100])
+                pg.draw.rect(surface, COLORS["tile_2"], [600 - (column * 200), row * 100, 100, 100])
             else:
-                pg.draw.rect(surface, COLORS["tile_1"], [700 - (column * 200), row * 100, 100, 100])
-            pg.draw.rect(surface, COLORS["tile_2"], [0, 800, SCREEN_SIZE[0], 100])
+                pg.draw.rect(surface, COLORS["tile_2"], [700 - (column * 200), row * 100, 100, 100])
+            pg.draw.rect(surface, COLORS["score"], [0, 800, SCREEN_SIZE[0], 100])
             pg.draw.rect(surface, COLORS["borders"], [0, 800, SCREEN_SIZE[0], 100], 5)
             pg.draw.rect(surface, COLORS["borders"], [800, 0, 200, SCREEN_SIZE[1]], 5)
             surface.blit(RESOURCES["fonts"]["oswald"].render(STATUSES[self.turn], True, COLORS["text"]), (20, 820))
+
             for i in range(9):
                 pg.draw.line(surface, COLORS["lines"], (0, 100 * i), (800, 100 * i), 2)
                 pg.draw.line(surface, COLORS["lines"], (100 * i, 0), (100 * i, 800), 2)
-            surface.blit(RESOURCES["fonts"]["oswald"].render('FORFEIT', True, 'black'), (810, 830))
+            surface.blit(RESOURCES["fonts"]["oswald"].render('Сдаться', True, COLORS["forfeit"]), (850, 820))
 
     def update(self, keys, now):
         self.now = now
@@ -316,7 +326,7 @@ class Game(_State):
             self.counter += 1
         else:
             self.counter = 0
-        surface.fill('dark gray')
+        surface.fill(COLORS["background"])
         self.draw_board(surface)
         self.draw_pieces(surface)
         self.draw_captured(surface)
@@ -338,7 +348,7 @@ class Game(_State):
                     click_coords = (x_coord, y_coord)
                     if self.turn <= 1:
                         if click_coords == (8, 8) or click_coords == (9, 8):
-                            self.winner = 'black'
+                            self.winner = 'Черные'
                         if click_coords in self.white_locations:
                             self.selection = self.white_locations.index(click_coords)
                             if self.turn == 0:
@@ -349,7 +359,7 @@ class Game(_State):
                                 black_piece = self.black_locations.index(click_coords)
                                 self.captured_pieces_white.append(self.black_pieces[black_piece])
                                 if self.black_pieces[black_piece] == 'king':
-                                    self.winner = 'white'
+                                    self.winner = 'Белые'
                                 self.black_pieces.pop(black_piece)
                                 self.black_locations.pop(black_piece)
                             self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
@@ -359,7 +369,7 @@ class Game(_State):
                             self.valid_moves = []
                     if self.turn > 1:
                         if click_coords == (8, 8) or click_coords == (9, 8):
-                            self.winner = 'white'
+                            self.winner = 'Белые'
                         if click_coords in self.black_locations:
                             self.selection = self.black_locations.index(click_coords)
                             if self.turn == 2:
@@ -370,7 +380,7 @@ class Game(_State):
                                 white_piece = self.white_locations.index(click_coords)
                                 self.captured_pieces_black.append(self.white_pieces[white_piece])
                                 if self.white_pieces[white_piece] == 'king':
-                                    self.winner = 'black'
+                                    self.winner = 'Черные'
                                 self.white_pieces.pop(white_piece)
                                 self.white_locations.pop(white_piece)
                             self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
