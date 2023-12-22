@@ -276,21 +276,40 @@ class Game(_State):
             column = i % 4
             row = i // 4
             if row % 2 == 0:
-                pg.draw.rect(surface, COLORS["light_gray"], [600 - (column * 200), row * 100, 100, 100])
+                pg.draw.rect(surface, COLORS["tile_1"], [600 - (column * 200), row * 100, 100, 100])
             else:
-                pg.draw.rect(surface, COLORS["light_gray"], [700 - (column * 200), row * 100, 100, 100])
-            pg.draw.rect(surface, COLORS["gray"], [0, 800, SCREEN_SIZE[0], 100])
-            pg.draw.rect(surface, COLORS["gold"], [0, 800, SCREEN_SIZE[0], 100], 5)
-            pg.draw.rect(surface, COLORS["gold"], [800, 0, 200, SCREEN_SIZE[1]], 5)
-            surface.blit(RESOURCES["fonts"]["oswald"].render(STATUSES[self.turn], True, COLORS["black"]), (20, 820))
+                pg.draw.rect(surface, COLORS["tile_1"], [700 - (column * 200), row * 100, 100, 100])
+            pg.draw.rect(surface, COLORS["tile_2"], [0, 800, SCREEN_SIZE[0], 100])
+            pg.draw.rect(surface, COLORS["borders"], [0, 800, SCREEN_SIZE[0], 100], 5)
+            pg.draw.rect(surface, COLORS["borders"], [800, 0, 200, SCREEN_SIZE[1]], 5)
+            surface.blit(RESOURCES["fonts"]["oswald"].render(STATUSES[self.turn], True, COLORS["text"]), (20, 820))
             for i in range(9):
-                pg.draw.line(surface, COLORS["black"], (0, 100 * i), (800, 100 * i), 2)
-                pg.draw.line(surface, COLORS["black"], (100 * i, 0), (100 * i, 800), 2)
+                pg.draw.line(surface, COLORS["lines"], (0, 100 * i), (800, 100 * i), 2)
+                pg.draw.line(surface, COLORS["lines"], (100 * i, 0), (100 * i, 800), 2)
             surface.blit(RESOURCES["fonts"]["oswald"].render('FORFEIT', True, 'black'), (810, 830))
 
     def update(self, keys, now):
         self.now = now
         self.alpha = min(self.alpha + self.alpha_speed, 255)
+
+    def restart_game(self):
+        self.game_over = False
+        self.winner = ''
+        self.white_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
+                             'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
+        self.white_locations = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0),
+                                (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1)]
+        self.black_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
+                             'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
+        self.black_locations = [(0, 7), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (7, 7),
+                                (0, 6), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6)]
+        self.captured_pieces_white = []
+        self.captured_pieces_black = []
+        self.turn = 0
+        self.selection = 100
+        self.valid_moves = []
+        self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
+        self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
 
     def draw(self, surface, interpolate):
         if self.counter < 30:
@@ -306,77 +325,59 @@ class Game(_State):
             self.valid_moves = self.check_valid_moves()
             self.draw_valid(self.valid_moves, surface)
 
-        for event in pg.event.get():
-            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1 and not self.game_over:
-                x_coord = event.pos[0] // 100
-                y_coord = event.pos[1] // 100
-                click_coords = (x_coord, y_coord)
-                if self.turn <= 1:
-                    if click_coords == (8, 8) or click_coords == (9, 8):
-                        self.winner = 'black'
-                    if click_coords in self.white_locations:
-                        self.selection = self.white_locations.index(click_coords)
-                        if self.turn == 0:
-                            self.turn = 1
-                    print(self.valid_moves)
-                    if click_coords in self.valid_moves and self.selection != 100:
-                        self.white_locations[self.selection] = click_coords
-                        if click_coords in self.black_locations:
-                            black_piece = self.black_locations.index(click_coords)
-                            self.captured_pieces_white.append(self.black_pieces[black_piece])
-                            if self.black_pieces[black_piece] == 'king':
-                                self.winner = 'white'
-                            self.black_pieces.pop(black_piece)
-                            self.black_locations.pop(black_piece)
-                        self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
-                        self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
-                        self.turn = 2
-                        self.selection = 100
-                        self.valid_moves = []
-                if self.turn > 1:
-                    if click_coords == (8, 8) or click_coords == (9, 8):
-                        self.winner = 'white'
-                    if click_coords in self.black_locations:
-                        self.selection = self.black_locations.index(click_coords)
-                        if self.turn == 2:
-                            self.turn = 3
-                    if click_coords in self.valid_moves and self.selection != 100:
-                        self.black_locations[self.selection] = click_coords
-                        if click_coords in self.white_locations:
-                            white_piece = self.white_locations.index(click_coords)
-                            self.captured_pieces_black.append(self.white_pieces[white_piece])
-                            if self.white_pieces[white_piece] == 'king':
-                                self.winner = 'black'
-                            self.white_pieces.pop(white_piece)
-                            self.white_locations.pop(white_piece)
-                        self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
-                        self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
-                        self.turn = 0
-                        self.selection = 100
-                        self.valid_moves = []
-            if event.type == pg.KEYDOWN and self.game_over:
-                if event.key == pg.K_RETURN:
-                    self.game_over = False
-                    self.winner = ''
-                    self.white_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
-                                         'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
-                    self.white_locations = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0),
-                                            (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1)]
-                    self.black_pieces = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook',
-                                         'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn', 'pawn']
-                    self.black_locations = [(0, 7), (1, 7), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7), (7, 7),
-                                            (0, 6), (1, 6), (2, 6), (3, 6), (4, 6), (5, 6), (6, 6), (7, 6)]
-                    self.captured_pieces_white = []
-                    self.captured_pieces_black = []
-                    self.turn = 0
-                    self.selection = 100
-                    self.valid_moves = []
-                    self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
-                    self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
-
         if self.winner != '':
             self.game_over = True
             self.draw_game_over(surface)
 
     def get_event(self, event):
-        pass
+        match event.type:
+            case pg.MOUSEBUTTONDOWN:
+                if event.button == 1 and not self.game_over:
+                    x_coord = event.pos[0] // 100
+                    y_coord = event.pos[1] // 100
+                    click_coords = (x_coord, y_coord)
+                    if self.turn <= 1:
+                        if click_coords == (8, 8) or click_coords == (9, 8):
+                            self.winner = 'black'
+                        if click_coords in self.white_locations:
+                            self.selection = self.white_locations.index(click_coords)
+                            if self.turn == 0:
+                                self.turn = 1
+                        if click_coords in self.valid_moves and self.selection != 100:
+                            self.white_locations[self.selection] = click_coords
+                            if click_coords in self.black_locations:
+                                black_piece = self.black_locations.index(click_coords)
+                                self.captured_pieces_white.append(self.black_pieces[black_piece])
+                                if self.black_pieces[black_piece] == 'king':
+                                    self.winner = 'white'
+                                self.black_pieces.pop(black_piece)
+                                self.black_locations.pop(black_piece)
+                            self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
+                            self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
+                            self.turn = 2
+                            self.selection = 100
+                            self.valid_moves = []
+                    if self.turn > 1:
+                        if click_coords == (8, 8) or click_coords == (9, 8):
+                            self.winner = 'white'
+                        if click_coords in self.black_locations:
+                            self.selection = self.black_locations.index(click_coords)
+                            if self.turn == 2:
+                                self.turn = 3
+                        if click_coords in self.valid_moves and self.selection != 100:
+                            self.black_locations[self.selection] = click_coords
+                            if click_coords in self.white_locations:
+                                white_piece = self.white_locations.index(click_coords)
+                                self.captured_pieces_black.append(self.white_pieces[white_piece])
+                                if self.white_pieces[white_piece] == 'king':
+                                    self.winner = 'black'
+                                self.white_pieces.pop(white_piece)
+                                self.white_locations.pop(white_piece)
+                            self.black_options = self.check_options(self.black_pieces, self.black_locations, 'black')
+                            self.white_options = self.check_options(self.white_pieces, self.white_locations, 'white')
+                            self.turn = 0
+                            self.selection = 100
+                            self.valid_moves = []
+            case pg.KEYDOWN:
+                if self.game_over and event.key == pg.K_RETURN:
+                    self.restart_game()
