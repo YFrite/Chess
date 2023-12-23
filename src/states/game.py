@@ -1,4 +1,4 @@
-from src.settings import SCREEN_SIZE, RESOURCES, COLORS, STATUSES
+from src.settings import SCREEN_SIZE, RESOURCES, COLORS, STATUSES, MUSIC
 from src.state_machine import _State
 import pygame as pg
 
@@ -262,7 +262,9 @@ class Game(_State):
                                                                      self.white_locations[king_index][1] * 100 + 1, 100,
                                                                      100],
                                          5)
-                            self.winner = "Черные"
+                            # self.winner = "Черные"
+                            pg.mixer.Sound.play(MUSIC["finish_him"])
+
         else:
             if 'king' in self.black_pieces:
                 king_index = self.black_pieces.index('king')
@@ -274,7 +276,9 @@ class Game(_State):
                                                                      self.black_locations[king_index][1] * 100 + 1, 100,
                                                                      100],
                                          5)
-                            self.winner = "Белые"
+                            # self.winner = "Белые"
+                            pg.mixer.Sound.play(MUSIC["finish_him"])
+
 
     def draw_board(self, surface):
         for i in range(32, 68):

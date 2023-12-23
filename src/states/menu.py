@@ -33,7 +33,7 @@ class Menu(_State):
         pass
 
     def draw(self, surface: Surface, interpolate):
-        surface.fill((0, 122, 122))
+        surface.fill((6, 56, 87))
         self.mouse_position = pg.mouse.get_pos()
         for button in self.buttons:
             button.update(surface, self.mouse_position)

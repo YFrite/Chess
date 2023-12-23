@@ -21,3 +21,4 @@ CAPTURE = "Chess"
 
 _SUB_DIRECTORIES = ["misc", "fonts", "figures"]
 RESOURCES = resources_from_dir(_SUB_DIRECTORIES)
+MUSIC = {"finish_him": pg.mixer.Sound(os.path.join("resources", "sounds", "finish_him.mp3")), }
