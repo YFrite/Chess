@@ -12,8 +12,8 @@ COLORS = load_yaml("data.yaml")
 STATUSES = {0: "Ход белых: выберите фигуру!", 1: "Ход белых: выберите клетку!",
             2: "Ход черных: выберите фигуру!", 3: "Ход черных: выберите клетку!"}
 
-SCREEN_RECT = pg.Rect((0, 0), SCREEN_SIZE)
 _screen = pg.display.set_mode(SCREEN_SIZE, pg.RESIZABLE)
+SCREEN_RECT = _screen.get_rect()
 
 TIME_PER_UPDATE = 16  # ms
 
